@@ -17,16 +17,61 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container" style="width: 600px;">
     <h1>Team Task Manager</h1>
-    <p>Please Login to Continue</p>
-    <form action="/api/users/login" method="POST">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit" class="btn">Login</button>
-    </form>
+    
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <h3>Add New Task</h3>
+        <input type="text" id="taskTitle" placeholder="Task Title">
+        <input type="text" id="memberName" placeholder="Member Name">
+        <button onclick="addTask()" class="btn">Add Task</button>
+    </div>
+
     <hr>
-    <p>Btech Project by Radhika</p>
+
+    <h3>Pending Tasks</h3>
+    <div id="taskList">
+        <p>Loading tasks...</p>
+    </div>
 </div>
+
+<script>
+    // 1. Task Add karne ka function
+    function addTask() {
+        const title = document.getElementById('taskTitle').value;
+        const member = document.getElementById('memberName').value;
+
+        fetch('/api/tasks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: title, memberName: member, status: 'PENDING' })
+        }).then(() => {
+            alert("Task Added!");
+            location.reload(); // Refresh to see new task
+        });
+    }
+
+    // 2. Task List dikhane aur Status change karne ka function
+    fetch('/api/tasks')
+        .then(res => res.json())
+        .then(data => {
+            let html = '';
+            data.forEach(task => {
+                html += `
+                    <div style="border: 1px solid #ddd; padding: 10px; margin: 5px; display: flex; justify-content: space-between;">
+                        <span><b>${task.title}</b> - ${task.memberName} (${task.status})</span>
+                        ${task.status === 'PENDING' ? 
+                            `<button onclick="completeTask(${task.id})" style="background:green; color:white; border:none; border-radius:3px; cursor:pointer;">Complete</button>` 
+                            : '✅'}
+                    </div>`;
+            });
+            document.getElementById('taskList').innerHTML = html || "No tasks found.";
+        });
+
+    function completeTask(id) {
+        fetch(`/api/tasks/${id}/complete`, { method: 'PUT' })
+            .then(() => location.reload());
+    }
+</script>
 
 </body>
