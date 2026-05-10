@@ -9,25 +9,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*") // Sab origins allow karne ke liye
 @RestController
-@RequestMapping("/api/users") // Path check karo: /api/users
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginUser) {
-        // Saare users nikal kar check karo (Simple way for assignment)
+    public String login(@RequestParam String username, @RequestParam String password) {
+        // Simple Logic for Presentation
         List<User> users = userRepository.findAll();
         for (User user : users) {
-            if (user.getUsername().equals(loginUser.getUsername()) && 
-                user.getPassword().equals(loginUser.getPassword())) {
-                return ResponseEntity.ok(user);
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return "Login Successful! Welcome " + username;
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
+        return "Invalid Username or Password";
     }
 
     @GetMapping("") // Isse http://localhost:8080/api/users chalne lagega
