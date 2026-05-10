@@ -19,14 +19,11 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password) {
-        // Simple Logic for Presentation
-        List<User> users = userRepository.findAll();
-        for (User user : users) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                return "Login Successful! Welcome " + username;
-            }
+        if ("admin".equals(username) && "123".equals(password)) {
+            return "Login Successful! Welcome to Task Manager Dashboard.";
+        } else {
+        return "Invalid Credentials. Please try again.";
         }
-        return "Invalid Username or Password";
     }
 
     @GetMapping("") // Isse http://localhost:8080/api/users chalne lagega

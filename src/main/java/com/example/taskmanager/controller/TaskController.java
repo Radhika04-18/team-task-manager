@@ -3,6 +3,7 @@ package com.example.taskmanager.controller;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -23,10 +24,10 @@ public class TaskController {
     public Task createTask(@RequestBody Task task) {
         return taskRepository.save(task);
     }
-    @PutMapping("/{id}")
-    public Task updateTask(@PathVariable Long id, @RequestBody Task taskDetails) {
-        Task task = taskRepository.findById(id).orElseThrow();
-        task.setStatus(taskDetails.getStatus()); // Status ko 'COMPLETED' set karega
-        return taskRepository.save(task);
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<Task> completeTask(@PathVariable Long id) {
+    Task task = taskRepository.findById(id).orElseThrow();
+    task.setStatus("COMPLETED"); // Status update kiya
+    return ResponseEntity.ok(taskRepository.save(task));
     }
 }
